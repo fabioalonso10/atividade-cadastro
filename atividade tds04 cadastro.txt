@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf8">
+        <title>EXERCICIO</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    </head>
+    <body style="margin: 20px;">
+        <center><h1>EXERCICIO</h1></center>
+        <hr/>
+        <br/>
+        <center><a href="cadastro.php" class="btn btn-outline-secondary" tabindex="-1" role="button">Cadastrar um novo nome</a></center>
+        <br/>
+        <center>
+            <table class="table table-dark table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>NOME</th>
+                        <th>IDADE</th>
+                        <th>ALTURA</th>
+                        <th>PESO</th>
+                        <th>IMC</th>
+                        <th>CLASSIFICAÇÃO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                        include 'conecta.php';
+                        $nomes = mysqli_query($conn, "SELECT * FROM cadastro_funcionario");
+                        $row = mysqli_num_rows($nomes);
+                        if ($row > 0) {
+                            while($registro = $nomes->fetch_array()){
+                                $id = $registro['id'];
+                                echo '<tr>';
+                                    echo '<td>'.$registro['id'].'</td>';
+                                    echo '<td>'.$registro['nome'].'</td>';
+                                    echo '<td>'.$registro['idade'].'</td>';
+                                    echo '<td>'.$registro['altura'].'</td>';
+                                    echo '<td>'.$registro['peso'].'</td>';
+                                    echo '<td>'.$registro['imc'].'</td>';
+                                    echo '<td>'.$registro['classificação'].'</td>';
+                                    echo '<td><a href="editar.php?id='.$id.'">Editar</a> |  <a href="excluir.php?id='.$id.'">Excluir</a></td>';
+                                echo '</tr>';
+                            }
+                            echo '</tbody>';
+                            echo '</table>';
+                        }
+                        else {
+                            echo "Não existem nomes cadastrados!";
+                            echo '</tbody>';
+                            echo '</table>';
+                        }
+                    ?>
+        </center>
+    </body>
+</html>
+index
+<?php
+    $conn = mysqli_connect("localhost","root","","exercicio");
+    mysqli_set_charset($conn, "utf8");
+    if (!$conn) {
+        echo "Erro: ".mysqli_connect_error().PHP_EOL;
+    }
+?>
+conecta
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf8">
+        <title>EXERCICIO</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    </head>
+    <body style="margin: 20px;">
+        <center><h1>EXERCICIO</h1></center>
+        <hr/>
+        <br/>
+        <form action="cadnome.php" method="post">
+            <label>NOME</label><br/>
+            <input type="text" name="nome" placeholder="Insira um nome" required/>
+            <br/><br/>
+            <label>IDADE</label><br/>
+            <input type="number" name="idade" placeholder="Insira a idade" required/>
+            <br/><br/>
+            <label>ALTURA</label><br/>
+            <input type="number" name="altura" placeholder="Insira a altura" required/>
+            <br/><br/>
+            <label>PESO</label><br/>
+            <input type="number" name="PESO" placeholder="Insira o peso" required/>
+            <br/><br/>
+            <label>IMC</label><br/>
+            <input type="number" name="imc" placeholder="Insira o imc" required/>
+            <br/><br/>
+            <label>CLASSIFICAÇÃO</label><br/>
+            <input type="number" name="classificação" placeholder="Insira a classificação" required/>
+            <br/><br/>
+            <button type="submit" class="btn btn-outline-secondary">INSERIR</button>
+        </form>
+    </body>
+</html>
+cadastro
+<?php
+    include 'conecta.php';
+    $nome = $_POST['nome'];
+    $idade = $_POST['idade'];
+    $altura = $_POST['altura'];
+    $peso = $_POST['peso'];
+    $imc = $_POST['imc'];
+    $classificação = $_POST['classificação'];
+    $query = $conn->query("SELECT * FROM cadastro_funcionario WHERE nome='$nome' AND idade='$idade' altura='$altura' AND peso='$peso' imc='$imc' AND classificação='$classificação'");
+    if (mysqli_num_rows($query) > 0) {
+        echo "<script language='javascript' type='text/javascript'>
+        alert('Nome já existe em nossa base de dados!');
+        window.location.href='cadastro.php';
+        </script>";
+        mysqli_close($conn);
+    }
+    else {
+        $sql = "INSERT INTO cadastro_funcionario(nome,idade,altura,peso,imc,classificação) VALUES ('$nome','$idade','$altura','$peso','$imc','$classificação')";
+        if (mysqli_query($conn, $sql)) {
+            echo "<script language='javascript' type='text/javascript'>
+        alert('Dados gravados com sucesso!');
+        window.location.href='index.php';
+        </script>";
+        }
+    }
+    mysqli_close($conn);
+?>
+cadnome
+<?php
+    include 'conecta.php';
+    $id = $_GET['id'];
+    $sql = "SELECT * FROM pessoa WHERE id=$id";
+    $query = $conn->query($sql);
+    while ($dados = $query->fetch_array()){
+        $nome = $dados['nome'];
+        $idade = $dados['idade'];
+        $altura = $dados['altura'];
+        $peso = $dados['peso'];
+        $imc = $dados['imc'];
+        $classificação = $dados['classificação'];
+    }
+?>
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf8">
+        <title>EXERCICIO</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    </head>
+    <body style="margin: 20px;">
+        <center><h1>EXERCICIO</h1></center>
+        <hr/>
+        <br/>
+        <form action="upname.php?id=<?php echo $id;?>" method="post">
+            <label>NOME</label><br/>
+            <input type="text" name="nome" value="<?php echo $nome;?>" required/>
+            <br/><br/>
+            <label>IDADE</label><br/>
+            <input type="number" name="idade" value="<?php echo $idade;?>"required/>
+            <br/><br/>
+            <label>ALTURA</label><br/>
+            <input type="number" name="altura" value="<?php echo $altura;?>"required/>
+            <br/><br/>
+            <label>PESO</label><br/>
+            <input type="number" name="peso" value="<?php echo $peso;?>"required/>
+            <br/><br/>
+            <label>IMC</label><br/>
+            <input type="number" name="imc" value="<?php echo $imc;?>"required/>
+            <br/><br/>
+            <label>CLASSIFICAÇÃO</label><br/>
+            <input type="number" name="classificação" value="<?php echo $classificação;?>"required/>
+            <br/><br/>
+            <button type="submit" class="btn btn-outline-secondary">ATUALIZAR</button>
+        </form>
+    </body>
+</html>
+
+editar
+<?php
+     include 'conecta.php';
+     $id = $_GET['id'];
+     $sql = "DELETE FROM cadastro_funcionario WHERE id=$id";
+     if(mysqli_query($conn, $sql)){
+        echo "<script language='javascript' type='text/javascript'>
+              window.location.href='index.php';
+              </script>";
+     }
+?>
+excluir
+<?php
+    include 'conecta.php';
+    $id = $_GET['id'];
+    $nome = $_POST['nome'];
+    $idade = $_POST['idade'];
+    $altura = $_POST['altura'];
+    $peso = $_POST['peso'];
+    $imc = $_POST['imc'];
+    $classificação = $_POST['classificação'];
+    $sql = "UPDATE cadastro_funcionario SET nome=?, idade=?, altura=?, peso=?, imc=?, classificação=? WHERE id=?";
+    $update = $conn->prepare($sql) or die($conn->error);
+    if(!$update){
+        echo "erro na atualizaçao!".$conn->errno.'-'.$conn->error;
+    }
+    $update->bind_param('ssi', $nome, $idade, $id, $altura, $peso, $imc, $classificação);
+    $update->execute();
+    $update->close();
+    header("location: index.php");
+?>
+update
